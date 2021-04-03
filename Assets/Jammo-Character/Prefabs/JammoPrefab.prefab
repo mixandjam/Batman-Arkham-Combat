@@ -2947,16 +2947,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caa9f165e2b4f1a4f9522501717c095d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Velocity: 10
+  movementSpeed: 8
+  rotationSpeed: 0.5
+  fallSpeed: 0.2
   blockRotationPlayer: 0
-  desiredRotationSpeed: 0.3
-  Speed: 0
-  allowPlayerRotation: 0.1
-  HorizontalAnimSmoothTime: 0.2
-  VerticalAnimTime: 0.2
-  StartAnimTime: 0.3
-  StopAnimTime: 0.15
-  verticalVel: -0.5
 --- !u!1 &4619046246757020115
 GameObject:
   m_ObjectHideFlags: 0

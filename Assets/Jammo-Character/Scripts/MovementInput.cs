@@ -106,12 +106,12 @@ public class MovementInput : MonoBehaviour
 		//Physically move player
 		if (inputMagnitude > 0.1f)
 		{
-			anim.SetFloat("Blend", inputMagnitude, .1f, Time.deltaTime);
+			anim.SetFloat("InputMagnitude", inputMagnitude, .1f, Time.deltaTime);
 			PlayerMoveAndRotation();
 		}
 		else
 		{
-			anim.SetFloat("Blend", inputMagnitude, .1f,Time.deltaTime);
+			anim.SetFloat("InputMagnitude", inputMagnitude, .1f,Time.deltaTime);
 		}
 	}
 }
