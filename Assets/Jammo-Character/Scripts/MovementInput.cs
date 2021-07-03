@@ -20,6 +20,7 @@ public class MovementInput : MonoBehaviour
 	[SerializeField] float movementSpeed;
 	[SerializeField] float rotationSpeed = 0.1f;
 	[SerializeField] float fallSpeed = .2f;
+	public float acceleration = 1;
 
 	[Header("Booleans")]
 	[SerializeField] bool blockRotationPlayer;
@@ -50,9 +51,6 @@ public class MovementInput : MonoBehaviour
 
 	void PlayerMoveAndRotation()
 	{
-		InputX = Input.GetAxis("Horizontal");
-		InputZ = Input.GetAxis("Vertical");
-
 		var camera = Camera.main;
 		var forward = cam.transform.forward;
 		var right = cam.transform.right;
@@ -69,12 +67,12 @@ public class MovementInput : MonoBehaviour
 		{
 			//Camera
 			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desiredMoveDirection), rotationSpeed);
-			controller.Move(desiredMoveDirection * Time.deltaTime * movementSpeed);
+			controller.Move(desiredMoveDirection * Time.deltaTime * (movementSpeed * acceleration));
 		}
 		else
 		{
 			//Strafe
-			controller.Move((transform.forward * InputZ + transform.right * InputX) * Time.deltaTime * movementSpeed);
+			controller.Move((transform.forward * InputZ + transform.right * InputX) * Time.deltaTime * (movementSpeed * acceleration));
 		}
 	}
 
@@ -106,12 +104,12 @@ public class MovementInput : MonoBehaviour
 		//Physically move player
 		if (inputMagnitude > 0.1f)
 		{
-			anim.SetFloat("InputMagnitude", inputMagnitude, .1f, Time.deltaTime);
+			anim.SetFloat("InputMagnitude", inputMagnitude * acceleration, .1f, Time.deltaTime);
 			PlayerMoveAndRotation();
 		}
 		else
 		{
-			anim.SetFloat("InputMagnitude", inputMagnitude, .1f,Time.deltaTime);
+			anim.SetFloat("InputMagnitude", inputMagnitude * acceleration, .1f,Time.deltaTime);
 		}
 	}
 }
