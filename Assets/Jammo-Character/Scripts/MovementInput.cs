@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 public class MovementInput : MonoBehaviour
@@ -12,8 +11,7 @@ public class MovementInput : MonoBehaviour
 	private Vector3 desiredMoveDirection;
 	private Vector3 moveVector;
 
-	private float InputX;
-	private float InputZ;
+	public Vector2 moveAxis;
 	private float verticalVel;
 
 	[Header("Settings")]
@@ -61,18 +59,18 @@ public class MovementInput : MonoBehaviour
 		forward.Normalize();
 		right.Normalize();
 
-		desiredMoveDirection = forward * InputZ + right * InputX;
+		desiredMoveDirection = forward * moveAxis.y + right * moveAxis.x;
 
 		if (blockRotationPlayer == false)
 		{
 			//Camera
-			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desiredMoveDirection), rotationSpeed);
+			transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desiredMoveDirection), rotationSpeed * acceleration);
 			controller.Move(desiredMoveDirection * Time.deltaTime * (movementSpeed * acceleration));
 		}
 		else
 		{
 			//Strafe
-			controller.Move((transform.forward * InputZ + transform.right * InputX) * Time.deltaTime * (movementSpeed * acceleration));
+			controller.Move((transform.forward * moveAxis.y + transform.right * moveAxis.y) * Time.deltaTime * (movementSpeed * acceleration));
 		}
 	}
 
@@ -94,12 +92,8 @@ public class MovementInput : MonoBehaviour
 
 	void InputMagnitude()
 	{
-		//Calculate Input Vectors
-		InputX = Input.GetAxis("Horizontal");
-		InputZ = Input.GetAxis("Vertical");
-
 		//Calculate the Input Magnitude
-		float inputMagnitude = new Vector2(InputX, InputZ).sqrMagnitude;
+		float inputMagnitude = new Vector2(moveAxis.x, moveAxis.y).sqrMagnitude;
 
 		//Physically move player
 		if (inputMagnitude > 0.1f)
@@ -111,5 +105,20 @@ public class MovementInput : MonoBehaviour
 		{
 			anim.SetFloat("InputMagnitude", inputMagnitude * acceleration, .1f,Time.deltaTime);
 		}
+	}
+
+	#region Input
+
+	public void OnMove(InputValue value)
+	{
+		moveAxis.x = value.Get<Vector2>().x;
+		moveAxis.y = value.Get<Vector2>().y;
+	}
+
+	#endregion
+
+	private void OnDisable()
+	{
+		anim.SetFloat("InputMagnitude", 0);
 	}
 }

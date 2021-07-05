@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 712f5db3690db9b488457da8dc7d269e
+guid: 51016e2365df9274ebf8aaf7194925aa
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: 6710270410737119176
-    second: Kicking
+    second: Idle
   - first:
       74: -203655887218126122
-    second: mixamo.com
+    second: Idle_Bounce
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -38,11 +38,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: mixamo.com
+      name: Idle_Bounce
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 102
+      lastFrame: 121
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

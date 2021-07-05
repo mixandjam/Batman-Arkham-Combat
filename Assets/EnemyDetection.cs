@@ -1,23 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyDetection : MonoBehaviour
 {
-
-    CombatScript combatScript;
+    private MovementInput movementInput;
+    private CombatScript combatScript;
 
     [Header("Targets in radius")]
-    public List<Transform> targets;
+    public List<EnemyScript> targets;
     public int targetIndex;
 
     public LayerMask layerMask;
 
     Vector3 desiredMoveDirection;
-    private Transform currentTarget;
+    [SerializeField] private EnemyScript currentTarget;
+
+    public GameObject cam;
 
     private void Start()
     {
+        movementInput = GetComponentInParent<MovementInput>();
         combatScript = GetComponentInParent<CombatScript>();
     }
 
@@ -25,7 +27,7 @@ public class EnemyDetection : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            targets.Add(other.transform);
+            targets.Add(other.GetComponent<EnemyScript>());
         }
     }
 
@@ -33,17 +35,18 @@ public class EnemyDetection : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            if (targets.Contains(other.transform))
-                targets.Remove(other.transform);
+            if (targets.Contains(other.GetComponent<EnemyScript>()))
+                targets.Remove(other.GetComponent<EnemyScript>());
         }
+    }
+
+    public void RemoveEnemy(EnemyScript enemy)
+    {
+        targets.Remove(enemy);
     }
 
     private void Update()
     {
-        //Input
-        float InputX = Input.GetAxis("Horizontal");
-        float InputZ = Input.GetAxis("Vertical");
-
         var camera = Camera.main;
         var forward = camera.transform.forward;
         var right = camera.transform.right;
@@ -54,20 +57,28 @@ public class EnemyDetection : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        desiredMoveDirection = forward * InputZ + right * InputX;
+        desiredMoveDirection = forward * movementInput.moveAxis.y + right * movementInput.moveAxis.x;
         desiredMoveDirection = desiredMoveDirection.normalized;
+
+        if (movementInput.moveAxis.magnitude < .5f)
+            desiredMoveDirection = transform.forward;
 
         RaycastHit info;
 
-        if (Physics.SphereCast(transform.position, 1.5f, desiredMoveDirection,out info, 10,layerMask))
+        if (Physics.SphereCast(transform.position, 3f, desiredMoveDirection,out info, 10,layerMask))
         {
-            currentTarget = info.collider.transform;
+            currentTarget = info.collider.transform.GetComponent<EnemyScript>();
         }
     }
 
-    public Transform CurrentTarget()
+    public EnemyScript CurrentTarget()
     {
         return currentTarget;
+    }
+
+    public void SetCurrentTarget(EnemyScript target)
+    {
+        currentTarget = target;
     }
 
     private void OnDrawGizmos()
@@ -76,6 +87,6 @@ public class EnemyDetection : MonoBehaviour
         Gizmos.DrawRay(transform.position, desiredMoveDirection);
         Gizmos.DrawWireSphere(transform.position, 1);
         if(CurrentTarget() != null)
-            Gizmos.DrawSphere(CurrentTarget().position, .5f);
+            Gizmos.DrawSphere(CurrentTarget().transform.position, .5f);
     }
 }

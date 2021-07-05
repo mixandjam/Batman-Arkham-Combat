@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class EnemyScript : MonoBehaviour
 {
+    public int health = 3;
+
     Animator animator;
     CombatScript playerCombat;
 
@@ -19,11 +22,26 @@ public class EnemyScript : MonoBehaviour
         transform.LookAt(new Vector3(playerCombat.transform.position.x, transform.position.y, playerCombat.transform.position.z));
     }
 
-    void OnHit(Transform target)
+    void OnHit(EnemyScript target)
     {
-        if(transform == target)
+        if(target == this && health > 0)
         {
+            health--;
+
+            if(health <= 0)
+            {
+                animator.SetTrigger("Death");
+
+                FindObjectOfType<EnemyDetection>().RemoveEnemy(this);
+                FindObjectOfType<EnemyDetection>().SetCurrentTarget(null);
+                GetComponent<CharacterController>().enabled = false;
+                this.enabled = false;
+                return;
+            }
             animator.SetTrigger("Hit");
+
+            //transform.DOMove(transform.position - (transform.forward/3), .3f).SetDelay(.1f);
         }
     }
+
 }

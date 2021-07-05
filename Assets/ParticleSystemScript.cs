@@ -15,14 +15,6 @@ public class ParticleSystemScript : MonoBehaviour
         particleMaterial = particleRenderer.material;
     }
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            PlayParticleAtPosition(transform.position);
-        }
-    }
-
     public void PlayParticleAtPosition(Vector3 pos)
     {
         var pmain = particle.main;
