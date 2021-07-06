@@ -60,9 +60,6 @@ public class EnemyDetection : MonoBehaviour
         desiredMoveDirection = forward * movementInput.moveAxis.y + right * movementInput.moveAxis.x;
         desiredMoveDirection = desiredMoveDirection.normalized;
 
-        if (movementInput.moveAxis.magnitude < .5f)
-            desiredMoveDirection = transform.forward;
-
         RaycastHit info;
 
         if (Physics.SphereCast(transform.position, 3f, desiredMoveDirection,out info, 10,layerMask))
@@ -79,6 +76,15 @@ public class EnemyDetection : MonoBehaviour
     public void SetCurrentTarget(EnemyScript target)
     {
         currentTarget = target;
+    }
+
+    public void PickRandomTarget()
+    {
+        EnemyScript randomTarget;
+
+        int randomInt = Random.Range(0, targets.Count);
+        randomTarget = targets[randomInt];
+        currentTarget = randomTarget;
     }
 
     private void OnDrawGizmos()

@@ -10,6 +10,8 @@ public class EnemyScript : MonoBehaviour
     Animator animator;
     CombatScript playerCombat;
 
+    public bool preparingAttack;
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -39,8 +41,7 @@ public class EnemyScript : MonoBehaviour
                 return;
             }
             animator.SetTrigger("Hit");
-
-            //transform.DOMove(transform.position - (transform.forward/3), .3f).SetDelay(.1f);
+            transform.DOMove(transform.position - (transform.forward/2), .3f).SetDelay(.1f);
         }
     }
 

@@ -47,20 +47,26 @@ public class CombatScript : MonoBehaviour
 
         float duration = .2f;
 
-        transform.DOMove(transform.position - transform.forward, duration);
         animator.SetTrigger("Dodge");
 
-        StartCoroutine(MovementDisableCoroutine(duration));
+        if (!AnEnemyIsPreparingAttack())
+            return;
 
-        IEnumerator MovementDisableCoroutine(float duration)
-        {
-            isCountering = true;
-            movementInput.enabled = false;
-            yield return new WaitForSeconds(duration);
-            movementInput.enabled = true;
-            isCountering = false;
-            AttackCheck();
-        }
+        transform.DOLookAt(ClosestCounterEnemy().transform.position,.2f);
+        transform.DOMove(transform.position - transform.forward, duration);
+
+        //StartCoroutine(Test(duration));
+
+        //IEnumerator Test(float duration)
+        //{
+        //    isCountering = true;
+        //    movementInput.enabled = false;
+        //    yield return new WaitForSeconds(duration);
+        //    Attack(ClosestCounterEnemy(), TargetDistance(lockedTarget));
+        //    movementInput.enabled = true;
+        //    isCountering = false;
+
+        //}
     }
 
     void AttackCheck()
@@ -70,12 +76,22 @@ public class CombatScript : MonoBehaviour
 
         if (enemyDetection.CurrentTarget() == null)
         {
-            Attack(null, 0);
-            return;
+            if (enemyDetection.targets.Count == 0)
+            {
+                Attack(null, 0);
+                return;
+            }
+            else
+            {
+                enemyDetection.PickRandomTarget();
+            }
         }
 
         //Lock target
         lockedTarget = enemyDetection.CurrentTarget();
+
+        //Choose Random Target
+        enemyDetection.PickRandomTarget();
 
         //AttackTarget
         Attack(lockedTarget, TargetDistance(lockedTarget));
@@ -86,20 +102,20 @@ public class CombatScript : MonoBehaviour
     {
         attacks = new string[] { "AirKick", "AirKick2", "AirPunch", "AirKick3" };
 
-        if(target == null)
+        if (target == null)
+        {
             AttackType("GroundPunch", .2f, null, 0);
+            return;
+        }
 
-        if(distance <= 4)
-            AttackType("GroundPunch", .2f, target, .2f);
-
-        if (distance > 4 && distance < 10)
+        if (distance < 12)
         {
             animationCount = (int)Mathf.Repeat((float)animationCount + 1, (float)attacks.Length);
-            AttackType(attacks[animationCount], longAttackCooldown, target, .65f);
+            AttackType(isLastBlow() ? attacks[Random.Range(0,attacks.Length)] : attacks[animationCount], longAttackCooldown, target, .65f);
         }
 
         if (GetComponentInChildren<CinemachineImpulseSource>())
-            GetComponentInChildren<CinemachineImpulseSource>().m_ImpulseDefinition.m_AmplitudeGain = 1 * distance;
+            GetComponentInChildren<CinemachineImpulseSource>().m_ImpulseDefinition.m_AmplitudeGain = Mathf.Max(3,1 * distance);
 
     }
 
@@ -176,6 +192,41 @@ public class CombatScript : MonoBehaviour
         FindObjectOfType<ParticleSystemScript>().PlayParticleAtPosition(punchPosition.position);
     }
 
+    bool AnEnemyIsPreparingAttack()
+    {
+        foreach (EnemyScript enemyScript in enemyDetection.targets)
+        {
+            if (enemyScript.preparingAttack)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    EnemyScript ClosestCounterEnemy()
+    {
+        float minDistance = 100;
+        int finalIndex = 0;
+
+        for (int i = 0; i < enemyDetection.targets.Count; i++)
+        {
+            EnemyScript enemy = enemyDetection.targets[i];
+
+            if (enemy.preparingAttack)
+            {
+                if (Vector3.Distance(transform.position, enemy.transform.position) < minDistance)
+                {
+                    minDistance = Vector3.Distance(transform.position, enemy.transform.position);
+                    finalIndex = i;
+                }
+            }
+        }
+
+        return enemyDetection.targets[finalIndex];
+
+    }
+
     void LerpCharacterAcceleration()
     {
         movementInput.acceleration = 0;
@@ -193,15 +244,14 @@ public class CombatScript : MonoBehaviour
     {
         AttackCheck();
     }
-    
-    bool isLastBlow()
-    {
-        if (lockedTarget == null)
-            return false; 
-
-        return enemyDetection.targets.Count <= 1 && lockedTarget.health <= 1;
-    }
 
     #endregion
 
+    bool isLastBlow()
+    {
+        if (lockedTarget == null)
+            return false;
+
+        return enemyDetection.targets.Count <= 1 && lockedTarget.health <= 1;
+    }
 }
