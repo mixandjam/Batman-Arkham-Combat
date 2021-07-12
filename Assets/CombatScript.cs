@@ -32,6 +32,7 @@ public class CombatScript : MonoBehaviour
 
     //Events
     public UnityEvent<EnemyScript> OnHit;
+    public UnityEvent<EnemyScript> OnCounterAttack;
 
     void Start()
     {
@@ -52,21 +53,23 @@ public class CombatScript : MonoBehaviour
         if (!AnEnemyIsPreparingAttack())
             return;
 
-        transform.DOLookAt(ClosestCounterEnemy().transform.position,.2f);
+        lockedTarget = ClosestCounterEnemy();
+        OnCounterAttack.Invoke(lockedTarget);
+
+        transform.DOLookAt(lockedTarget.transform.position,.2f);
         transform.DOMove(transform.position - transform.forward, duration);
 
-        //StartCoroutine(Test(duration));
+        StartCoroutine(CounterCoroutine(duration));
 
-        //IEnumerator Test(float duration)
-        //{
-        //    isCountering = true;
-        //    movementInput.enabled = false;
-        //    yield return new WaitForSeconds(duration);
-        //    Attack(ClosestCounterEnemy(), TargetDistance(lockedTarget));
-        //    movementInput.enabled = true;
-        //    isCountering = false;
+        IEnumerator CounterCoroutine(float duration)
+        {
+            isCountering = true;
+            movementInput.enabled = false;
+            yield return new WaitForSeconds(duration);
+            Attack(lockedTarget, TargetDistance(lockedTarget));
+            isCountering = false;
 
-        //}
+        }
     }
 
     void AttackCheck()
@@ -180,7 +183,7 @@ public class CombatScript : MonoBehaviour
 
     public void HitEvent()
     {
-        if (enemyDetection.CurrentTarget() == null || lockedTarget == null)
+        if (lockedTarget == null)
             return;
 
         OnHit.Invoke(lockedTarget);
@@ -196,7 +199,7 @@ public class CombatScript : MonoBehaviour
     {
         foreach (EnemyScript enemyScript in enemyDetection.targets)
         {
-            if (enemyScript.preparingAttack)
+            if (enemyScript.IsPreparingAttack())
             {
                 return true;
             }
@@ -213,7 +216,7 @@ public class CombatScript : MonoBehaviour
         {
             EnemyScript enemy = enemyDetection.targets[i];
 
-            if (enemy.preparingAttack)
+            if (enemy.IsPreparingAttack())
             {
                 if (Vector3.Distance(transform.position, enemy.transform.position) < minDistance)
                 {
@@ -233,20 +236,6 @@ public class CombatScript : MonoBehaviour
         DOVirtual.Float(0, 1, .6f, ((acceleration)=> movementInput.acceleration = acceleration));
     }
 
-    #region Input
-
-    public void OnCounter()
-    {
-        CounterCheck();
-    }
-
-    public void OnAttack()
-    {
-        AttackCheck();
-    }
-
-    #endregion
-
     bool isLastBlow()
     {
         if (lockedTarget == null)
@@ -254,4 +243,19 @@ public class CombatScript : MonoBehaviour
 
         return enemyDetection.targets.Count <= 1 && lockedTarget.health <= 1;
     }
+
+    #region Input
+
+    private void OnCounter()
+    {
+        CounterCheck();
+    }
+
+    private void OnAttack()
+    {
+        AttackCheck();
+    }
+
+    #endregion
+
 }
