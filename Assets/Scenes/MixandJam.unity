@@ -18506,7 +18506,7 @@ MonoBehaviour:
     Anamorphism: 0
   m_Transitions:
     m_BlendHint: 0
-    m_InheritPosition: 0
+    m_InheritPosition: 1
     m_OnCameraLive:
       m_PersistentCalls:
         m_Calls: []
@@ -29742,7 +29742,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838142010}
-  m_LocalRotation: {x: 0.19030704, y: 0.000000008445966, z: -0.0000000016372478, w: 0.9817247}
+  m_LocalRotation: {x: 0.19030704, y: -0.000000008445964, z: 0.0000000016372474, w: 0.9817247}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -36136,6 +36136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
+  preparingAttack: 0
 --- !u!143 &1199509767
 CharacterController:
   m_ObjectHideFlags: 0
@@ -48444,6 +48445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
+  preparingAttack: 0
 --- !u!1 &1812347015
 GameObject:
   m_ObjectHideFlags: 0
@@ -65761,6 +65763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
+  preparingAttack: 1
 --- !u!1 &2595188005652723680
 GameObject:
   m_ObjectHideFlags: 0
@@ -69004,7 +69007,11 @@ PrefabInstance:
       objectReference: {fileID: 258038259}
     - target: {fileID: 719249599, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
       propertyPath: longAttackCooldown
-      value: 0.75
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1243603430, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
+      propertyPath: m_Radius
+      value: 1510
       objectReference: {fileID: 0}
     - target: {fileID: 1330535593, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
       propertyPath: m_LocalPosition.z
