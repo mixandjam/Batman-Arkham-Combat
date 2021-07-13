@@ -13,7 +13,8 @@ public class CombatScript : MonoBehaviour
     private MovementInput movementInput;
     private Animator animator;
 
-    private EnemyScript lockedTarget;
+    [Header("Target")]
+    public EnemyScript lockedTarget;
 
     [Header("Combat Settings")]
     [SerializeField] private float longAttackCooldown = 1.4f;
@@ -22,11 +23,16 @@ public class CombatScript : MonoBehaviour
     [SerializeField] private GameObject finalBlowCamera;
 
     [Header("States")]
-    [SerializeField] private bool isAttackingEnemy = false;
-    [SerializeField] private bool isCountering = false;
+    public bool isAttackingEnemy = false;
+    public bool isCountering = false;
 
     [Header("Public References")]
     [SerializeField] private Transform punchPosition;
+
+    //Coroutines
+    Coroutine counterCoroutine;
+    Coroutine attackCoroutine;
+    Coroutine damageCoroutine;
 
     [Space]
 
@@ -43,23 +49,27 @@ public class CombatScript : MonoBehaviour
 
     void CounterCheck()
     {
-        if (isCountering || isAttackingEnemy)
-            return;
-
-        float duration = .2f;
-
-        animator.SetTrigger("Dodge");
-
-        if (!AnEnemyIsPreparingAttack())
+        //Initial check
+        if (isCountering || isAttackingEnemy || !AnEnemyIsPreparingAttack())
             return;
 
         lockedTarget = ClosestCounterEnemy();
         OnCounterAttack.Invoke(lockedTarget);
 
-        transform.DOLookAt(lockedTarget.transform.position,.2f);
-        transform.DOMove(transform.position - transform.forward, duration);
+        if(TargetDistance(lockedTarget) > 3)
+        {
+            Attack(lockedTarget, TargetDistance(lockedTarget));
+            return;
+        }
 
-        StartCoroutine(CounterCoroutine(duration));
+        animator.SetTrigger("Dodge");
+        float duration = .2f;
+        transform.DOLookAt(lockedTarget.transform.position,.2f);
+        transform.DOMove(transform.position + lockedTarget.transform.forward, duration);
+
+        if(counterCoroutine != null)
+            StopCoroutine(counterCoroutine);
+        counterCoroutine = StartCoroutine(CounterCoroutine(duration));
 
         IEnumerator CounterCoroutine(float duration)
         {
@@ -103,6 +113,12 @@ public class CombatScript : MonoBehaviour
 
     public void Attack(EnemyScript target, float distance)
     {
+        if (GetComponentInChildren<TrailRenderer>() != null)
+        {
+            GetComponentInChildren<TrailRenderer>().Clear();
+            GetComponentInChildren<TrailRenderer>().time = 0;
+        }
+
         attacks = new string[] { "AirKick", "AirKick2", "AirPunch", "AirKick3" };
 
         if (target == null)
@@ -128,8 +144,9 @@ public class CombatScript : MonoBehaviour
 
         animator.SetTrigger(attackTrigger);
 
-        StopAllCoroutines();
-        StartCoroutine(MovementDisableCoroutine(isLastBlow() ? 1.5f : cooldown));
+        if (attackCoroutine != null)
+            StopCoroutine(attackCoroutine);
+        attackCoroutine = StartCoroutine(AttackCoroutine(isLastBlow() ? 1.5f : cooldown));
 
         //Check if last enemy
         if (isLastBlow())
@@ -140,7 +157,7 @@ public class CombatScript : MonoBehaviour
 
         MoveTorwardsTarget(target.transform, movementDuration);
 
-        IEnumerator MovementDisableCoroutine(float duration)
+        IEnumerator AttackCoroutine(float duration)
         {
             movementInput.acceleration = 0;
             isAttackingEnemy = true;
@@ -193,6 +210,23 @@ public class CombatScript : MonoBehaviour
 
         //Polish
         FindObjectOfType<ParticleSystemScript>().PlayParticleAtPosition(punchPosition.position);
+    }
+
+    public void DamageEvent()
+    {
+        animator.SetTrigger("Hit");
+
+        if (damageCoroutine != null)
+            StopCoroutine(damageCoroutine);
+        damageCoroutine = StartCoroutine(DamageCoroutine());
+
+        IEnumerator DamageCoroutine()
+        {
+            movementInput.enabled = false;
+            yield return new WaitForSeconds(.5f);
+            movementInput.enabled = true;
+            LerpCharacterAcceleration();
+        }
     }
 
     bool AnEnemyIsPreparingAttack()

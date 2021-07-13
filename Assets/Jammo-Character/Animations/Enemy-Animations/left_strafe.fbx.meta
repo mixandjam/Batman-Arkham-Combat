@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 594d358d66f69694da45210737ddec12
+guid: 12150ad27bc73ae44ad08aa7316521a8
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: 6710270410737119176
-    second: Cross Punch
+    second: jammo_mixamo_rig|PoseLib
   - first:
       74: -203655887218126122
-    second: Cross Punch
+    second: left_strafe
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -38,18 +38,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Cross Punch
+      name: left_strafe
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
