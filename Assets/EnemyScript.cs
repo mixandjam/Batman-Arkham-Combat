@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using DG.Tweening;
 
 public class EnemyScript : MonoBehaviour
@@ -18,13 +19,24 @@ public class EnemyScript : MonoBehaviour
 
     [Header("States")]
     [SerializeField] private bool isPreparingAttack;
-    [SerializeField] private bool isRecovering;
     [SerializeField] private bool isMoving;
+    [SerializeField] private bool isRetreating;
+    [SerializeField] private bool isLockedTarget;
+    [SerializeField] private bool isStunned;
+    [SerializeField] private bool isWaiting = true;
 
     [Header("Polish")]
     [SerializeField] private ParticleSystem counterParticle;
 
     private Coroutine PrepareAttackCoroutine;
+    private Coroutine RetreatCoroutine;
+    private Coroutine DamageCoroutine;
+    private Coroutine StrafeCoroutine;
+
+    //Events
+    public UnityEvent<EnemyScript> OnDamage;
+    public UnityEvent<EnemyScript> OnStopMoving;
+    public UnityEvent<EnemyScript> OnRetreat;
 
     void Start()
     {
@@ -36,8 +48,34 @@ public class EnemyScript : MonoBehaviour
         playerCombat = FindObjectOfType<CombatScript>();
         enemyDetection = playerCombat.GetComponentInChildren<EnemyDetection>();
 
-        playerCombat.OnHit.AddListener((x) => OnHit(x));
-        playerCombat.OnCounterAttack.AddListener((x) => OnCounter(x));
+        playerCombat.OnHit.AddListener((x) => OnPlayerHit(x));
+        playerCombat.OnCounterAttack.AddListener((x) => OnPlayerCounter(x));
+        playerCombat.OnTrajectory.AddListener((x) => OnPlayerTrajectory(x));
+
+        StrafeCoroutine = StartCoroutine(Strafe());
+
+    }
+
+    IEnumerator Strafe()
+    {
+        yield return new WaitUntil(() => isWaiting == true);
+
+        int randomChance = Random.Range(0, 2);
+
+        if (randomChance == 1)
+        {
+            int randomDir = Random.Range(0, 2);
+            moveDirection = randomDir == 1 ? Vector3.right : Vector3.left;
+            isMoving = true;
+        }
+        else
+        {
+            StopMoving();
+        }
+
+        yield return new WaitForSeconds(1);
+
+        StrafeCoroutine = StartCoroutine(Strafe());
     }
 
     void Update()
@@ -50,56 +88,106 @@ public class EnemyScript : MonoBehaviour
     }
 
     //Listened event from Player Animation
-    void OnHit(EnemyScript target)
+    void OnPlayerHit(EnemyScript target)
     {
-        if(target == this && health > 0)
+        if (target == this)
         {
+            StopEnemyCoroutines();
+            DamageCoroutine = StartCoroutine(HitCoroutine());
+
             enemyDetection.SetCurrentTarget(null);
+            isLockedTarget = false;
+            OnDamage.Invoke(this);
 
             health--;
 
-            if(health <= 0)
+            if (health <= 0)
             {
                 Death();
                 return;
             }
 
             animator.SetTrigger("Hit");
-            transform.DOMove(transform.position - (transform.forward/2), .3f).SetDelay(.1f);
-
-            if(PrepareAttackCoroutine != null)
-            StopCoroutine(PrepareAttackCoroutine);
-
-            if (isPreparingAttack)
-                PrepareAttack(false);
+            transform.DOMove(transform.position - (transform.forward / 2), .3f).SetDelay(.1f);
 
             StopMoving();
         }
+
+        IEnumerator HitCoroutine()
+        {
+            isStunned = true;
+            yield return new WaitForSeconds(.5f);
+            isStunned = false;
+        }
     }
 
-    void OnCounter(EnemyScript target)
+    void OnPlayerCounter(EnemyScript target)
     {
-        if(target == this)
+        if (target == this)
         {
             PrepareAttack(false);
         }
     }
 
-    void Death()
+    void OnPlayerTrajectory(EnemyScript target)
     {
-        this.enabled = false;
-        animator.SetTrigger("Death");
-        enemyManager.SetEnemyAvailiability(this, false);
-        characterController.enabled = false;
+        if (target == this)
+        {
+            StopEnemyCoroutines();
+            isLockedTarget = true;
+            PrepareAttack(false);
+            StopMoving();
+        }
     }
 
-    IEnumerator PrepAttack()
+    void Death()
     {
-        PrepareAttack(true);
-        yield return new WaitForSeconds(.2f);
-        moveDirection = Vector3.forward;
-        isMoving = true;
+        StopEnemyCoroutines();
+
+        this.enabled = false;
+        characterController.enabled = false;
+        animator.SetTrigger("Death");
+        enemyManager.SetEnemyAvailiability(this, false);
     }
+
+    public void SetRetreat()
+    {
+        StopEnemyCoroutines();
+
+        RetreatCoroutine = StartCoroutine(PrepRetreat());
+
+        IEnumerator PrepRetreat()
+        {
+            yield return new WaitForSeconds(1.4f);
+            OnRetreat.Invoke(this);
+            isRetreating = true;
+            moveDirection = -Vector3.forward;
+            isMoving = true;
+            yield return new WaitUntil(() => Vector3.Distance(transform.position, playerCombat.transform.position) > 4);
+            isRetreating = false;
+            StopMoving();
+
+            //Free 
+            isWaiting = true;
+            StrafeCoroutine = StartCoroutine(Strafe());
+        }
+    }
+
+    public void SetAttack()
+    {
+        isWaiting = false;
+
+        PrepareAttackCoroutine = StartCoroutine(PrepAttack());
+
+        IEnumerator PrepAttack()
+        {
+            PrepareAttack(true);
+            yield return new WaitForSeconds(.2f);
+            moveDirection = Vector3.forward;
+            isMoving = true;
+        }
+    }
+
 
     void PrepareAttack(bool active)
     {
@@ -119,11 +207,17 @@ public class EnemyScript : MonoBehaviour
 
     void MoveEnemy(Vector3 direction)
     {
-        moveSpeed = direction == Vector3.forward ? 4 : 1;
+        moveSpeed = 1;
 
-        animator.SetFloat("InputMagnitude", characterController.velocity.normalized.magnitude/(5/moveSpeed), .2f, Time.deltaTime);
+        if (direction == Vector3.forward)
+            moveSpeed = 5;
+        if (direction == -Vector3.forward)
+            moveSpeed = 2;
+
+
+        animator.SetFloat("InputMagnitude", (characterController.velocity.normalized.magnitude * direction.z) / (5 / moveSpeed), .2f, Time.deltaTime);
         animator.SetBool("Strafe", (direction == Vector3.right || direction == Vector3.left));
-        animator.SetFloat("StrafeDirection", direction.normalized.x);
+        animator.SetFloat("StrafeDirection", direction.normalized.x, .2f, Time.deltaTime);
 
         if (!isMoving)
             return;
@@ -132,9 +226,24 @@ public class EnemyScript : MonoBehaviour
         Vector3 pDir = Quaternion.AngleAxis(90, Vector3.up) * dir; //Vector perpendicular to direction
         Vector3 movedir = Vector3.zero;
 
-        movedir += (direction == Vector3.forward ? dir : (pDir * direction.normalized.x)) * moveSpeed * Time.deltaTime;
+        Vector3 finalDirection = Vector3.zero;
+
+        if (direction == Vector3.forward)
+            finalDirection = dir;
+        if (direction == Vector3.right || direction == Vector3.left)
+            finalDirection = (pDir * direction.normalized.x);
+        if (direction == -Vector3.forward)
+            finalDirection = -transform.forward;
+
+        if (direction == Vector3.right || direction == Vector3.left)
+            moveSpeed /= 1.5f;
+
+        movedir += finalDirection * moveSpeed * Time.deltaTime;
 
         characterController.Move(movedir);
+
+        if (!isPreparingAttack)
+            return;
 
         if(Vector3.Distance(transform.position, playerCombat.transform.position) < 2)
         {
@@ -160,15 +269,39 @@ public class EnemyScript : MonoBehaviour
         PrepareAttack(false);
     }
 
-    private void StopMoving()
+    public void StopMoving()
     {
         isMoving = false;
         moveDirection = Vector3.zero;
-        characterController.Move(moveDirection);
+        if(characterController.enabled)
+            characterController.Move(moveDirection);
     }
+
+    void StopEnemyCoroutines()
+    {
+        PrepareAttack(false);
+
+        if (isRetreating)
+        {
+            if (RetreatCoroutine != null)
+                StopCoroutine(RetreatCoroutine);
+        }
+
+        if (PrepareAttackCoroutine != null)
+            StopCoroutine(PrepareAttackCoroutine);
+
+        if(DamageCoroutine != null)
+            StopCoroutine(DamageCoroutine);
+
+        if (StrafeCoroutine != null)
+            StopCoroutine(StrafeCoroutine);
+    }
+
+    #region Public Booleans
+
     public bool IsAttackable()
     {
-        return !isRecovering && health > 0;
+        return health > 0;
     }
 
     public bool IsPreparingAttack()
@@ -176,4 +309,20 @@ public class EnemyScript : MonoBehaviour
         return isPreparingAttack;
     }
 
+    public bool IsRetreating()
+    {
+        return isRetreating;
+    }
+
+    public bool IsLockedTarget()
+    {
+        return isLockedTarget;
+    }
+
+    public bool IsStunned()
+    {
+        return isStunned;
+    }
+
+    #endregion
 }

@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Flying Punch Combo
+  m_Name: Punch
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -75,6 +75,14 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
+    m_Motion: {fileID: -203655887218126122, guid: b3057a249dac3e747ba0067ccfc32c38, type: 3}
+    m_Threshold: -0.25
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1.5
+    m_CycleOffset: 0
+    m_DirectBlendParameter: InputMagnitude
+    m_Mirror: 0
+  - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 51016e2365df9274ebf8aaf7194925aa, type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
@@ -100,7 +108,7 @@ BlendTree:
     m_Mirror: 0
   m_BlendParameter: InputMagnitude
   m_BlendParameterY: Blend
-  m_MinThreshold: 0
+  m_MinThreshold: -0.25
   m_MaxThreshold: 0.6
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
@@ -112,7 +120,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Flying Back Death
+  m_Name: Death
   m_Speed: 1.2
   m_CycleOffset: 0
   m_Transitions: []
@@ -344,7 +352,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 12150ad27bc73ae44ad08aa7316521a8, type: 3}
     m_Threshold: -1.3938355
-    m_Position: {x: 0, y: 0}
+    m_Position: {x: -1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: InputMagnitude
@@ -352,13 +360,13 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 0d7638f9965bb794c92e909952c1a86a, type: 3}
     m_Threshold: 1
-    m_Position: {x: 0, y: 0}
+    m_Position: {x: 1, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: InputMagnitude
     m_Mirror: 0
   m_BlendParameter: StrafeDirection
-  m_BlendParameterY: InputMagnitude
+  m_BlendParameterY: RetreatAmount
   m_MinThreshold: -1.3938355
   m_MaxThreshold: 1
   m_UseAutomaticThresholds: 0
@@ -614,7 +622,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HeadHity
+  m_Name: Hit
   m_Speed: 1.4
   m_CycleOffset: 0
   m_Transitions:
@@ -666,7 +674,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NormalStatus
+  m_Name: WalkBlend
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -700,13 +708,13 @@ AnimatorStateMachine:
     m_Position: {x: 240, y: 190, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8807381093088928401}
-    m_Position: {x: 230, y: 20, z: 0}
+    m_Position: {x: 240, y: 50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5505067444010610331}
     m_Position: {x: 10, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7088597899562729550}
-    m_Position: {x: 10, y: 60, z: 0}
+    m_Position: {x: 450, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 9202937675362950314}
     m_Position: {x: 240, y: 250, z: 0}
@@ -720,7 +728,7 @@ AnimatorStateMachine:
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 260, y: 110, z: 0}
   m_EntryPosition: {x: -160, y: 200, z: 0}
-  m_ExitPosition: {x: 460, y: 150, z: 0}
+  m_ExitPosition: {x: 30, y: 50, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 6559091717608044577}
 --- !u!1102 &9202937675362950314
@@ -730,7 +738,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Blend Tree
+  m_Name: StrafeBlend
   m_Speed: 1.6
   m_CycleOffset: 0
   m_Transitions:

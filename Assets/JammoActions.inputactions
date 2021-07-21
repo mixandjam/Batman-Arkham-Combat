@@ -280,6 +280,17 @@
                 },
                 {
                     "name": "",
+                    "id": "322da84f-37f3-4cb7-8bc1-3abceb3f5ef8",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Counter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d6684fa9-b138-4ca2-9fa6-8ebd054c84d8",
                     "path": "<Gamepad>/select",
                     "interactions": "",

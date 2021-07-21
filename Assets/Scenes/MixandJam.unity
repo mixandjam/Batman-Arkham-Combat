@@ -25150,7 +25150,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 473079553}
-  m_LocalRotation: {x: 0.17121494, y: -0.000000037755814, z: 0.000000006561245, w: 0.9852337}
+  m_LocalRotation: {x: 0.17121494, y: 0.00000003798473, z: -0.000000006601026, w: 0.9852337}
   m_LocalPosition: {x: -2.18, y: 8.57, z: -11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -26822,9 +26822,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   isPreparingAttack: 0
-  isRecovering: 0
   isMoving: 0
+  isRetreating: 0
+  isLockedTarget: 0
+  isStunned: 0
+  isWaiting: 1
   counterParticle: {fileID: 423771651}
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRetreat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!143 &578125993
 CharacterController:
   m_ObjectHideFlags: 0
@@ -32777,7 +32789,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838142010}
-  m_LocalRotation: {x: 0.055912755, y: 0.0031801842, z: -0.0008184677, w: 0.9984303}
+  m_LocalRotation: {x: 0.055912755, y: 0.0031801509, z: -0.00081845914, w: 0.9984303}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -41830,9 +41842,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   isPreparingAttack: 0
-  isRecovering: 0
   isMoving: 0
+  isRetreating: 0
+  isLockedTarget: 0
+  isStunned: 0
+  isWaiting: 1
   counterParticle: {fileID: 301996423}
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRetreat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!143 &1327648226
 CharacterController:
   m_ObjectHideFlags: 0
@@ -43560,9 +43584,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   isPreparingAttack: 0
-  isRecovering: 0
   isMoving: 0
+  isRetreating: 0
+  isLockedTarget: 0
+  isStunned: 0
+  isWaiting: 1
   counterParticle: {fileID: 444182275}
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRetreat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!143 &1418402566
 CharacterController:
   m_ObjectHideFlags: 0
@@ -43846,7 +43882,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1431891821}
-  m_LocalRotation: {x: 0.07401652, y: 0.0031647778, z: -0.0008760166, w: 0.99725163}
+  m_LocalRotation: {x: 0.07401652, y: 0.0031648148, z: -0.0008760268, w: 0.99725163}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -44133,7 +44169,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1437891706}
-  m_LocalRotation: {x: 0.09214377, y: 0.0031483464, z: -0.0009334452, w: 0.99574035}
+  m_LocalRotation: {x: 0.09214377, y: 0.00314833, z: -0.0009334403, w: 0.99574035}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -47171,9 +47207,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   isPreparingAttack: 0
-  isRecovering: 0
   isMoving: 0
+  isRetreating: 0
+  isLockedTarget: 0
+  isStunned: 0
+  isWaiting: 1
   counterParticle: {fileID: 711134015}
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRetreat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!143 &1610574438
 CharacterController:
   m_ObjectHideFlags: 0
@@ -50577,6 +50625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allEnemies: []
+  aliveEnemyCount: 0
 --- !u!1 &1696653815
 GameObject:
   m_ObjectHideFlags: 0
@@ -70859,9 +70908,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   isPreparingAttack: 0
-  isRecovering: 0
   isMoving: 0
+  isRetreating: 0
+  isLockedTarget: 0
+  isStunned: 0
+  isWaiting: 1
   counterParticle: {fileID: 200420307}
+  OnDamage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStopMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  OnRetreat:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2595188005652723680
 GameObject:
   m_ObjectHideFlags: 0
@@ -74109,9 +74170,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 212553432}
     - target: {fileID: 719249599, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
+      propertyPath: attackCooldown
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 719249599, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
       propertyPath: finalBlowCamera
       value: 
       objectReference: {fileID: 258038259}
+    - target: {fileID: 719249599, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
+      propertyPath: lastHitFocusObject
+      value: 
+      objectReference: {fileID: 452859491}
     - target: {fileID: 719249599, guid: 635429b722a72604b9d8d113df87a56b, type: 3}
       propertyPath: longAttackCooldown
       value: 0.7
