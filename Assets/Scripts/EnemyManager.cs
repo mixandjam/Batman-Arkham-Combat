@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    CombatScript playerCombat;
-
     private EnemyScript[] enemies;
     public EnemyStruct[] allEnemies;
     private List<int> enemyIndexes;
@@ -16,7 +14,6 @@ public class EnemyManager : MonoBehaviour
     public int aliveEnemyCount;
     void Start()
     {
-        playerCombat = FindObjectOfType<CombatScript>();
         enemies = GetComponentsInChildren<EnemyScript>();
 
         allEnemies = new EnemyStruct[enemies.Length];
@@ -159,7 +156,6 @@ public class EnemyManager : MonoBehaviour
 
 
 }
-
 
 [System.Serializable]
 public struct EnemyStruct

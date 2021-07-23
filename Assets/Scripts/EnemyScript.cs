@@ -31,7 +31,7 @@ public class EnemyScript : MonoBehaviour
     private Coroutine PrepareAttackCoroutine;
     private Coroutine RetreatCoroutine;
     private Coroutine DamageCoroutine;
-    private Coroutine StrafeCoroutine;
+    private Coroutine MovementCoroutine;
 
     //Events
     public UnityEvent<EnemyScript> OnDamage;
@@ -52,12 +52,13 @@ public class EnemyScript : MonoBehaviour
         playerCombat.OnCounterAttack.AddListener((x) => OnPlayerCounter(x));
         playerCombat.OnTrajectory.AddListener((x) => OnPlayerTrajectory(x));
 
-        StrafeCoroutine = StartCoroutine(Strafe());
+        MovementCoroutine = StartCoroutine(EnemyMovement());
 
     }
 
-    IEnumerator Strafe()
+    IEnumerator EnemyMovement()
     {
+        //Waits until the enemy is not assigned to no action like attacking or retreating
         yield return new WaitUntil(() => isWaiting == true);
 
         int randomChance = Random.Range(0, 2);
@@ -75,7 +76,7 @@ public class EnemyScript : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
-        StrafeCoroutine = StartCoroutine(Strafe());
+        MovementCoroutine = StartCoroutine(EnemyMovement());
     }
 
     void Update()
@@ -169,7 +170,7 @@ public class EnemyScript : MonoBehaviour
 
             //Free 
             isWaiting = true;
-            StrafeCoroutine = StartCoroutine(Strafe());
+            MovementCoroutine = StartCoroutine(EnemyMovement());
         }
     }
 
@@ -207,6 +208,7 @@ public class EnemyScript : MonoBehaviour
 
     void MoveEnemy(Vector3 direction)
     {
+        //Set movespeed based on direction
         moveSpeed = 1;
 
         if (direction == Vector3.forward)
@@ -214,11 +216,12 @@ public class EnemyScript : MonoBehaviour
         if (direction == -Vector3.forward)
             moveSpeed = 2;
 
-
+        //Set Animator values
         animator.SetFloat("InputMagnitude", (characterController.velocity.normalized.magnitude * direction.z) / (5 / moveSpeed), .2f, Time.deltaTime);
         animator.SetBool("Strafe", (direction == Vector3.right || direction == Vector3.left));
         animator.SetFloat("StrafeDirection", direction.normalized.x, .2f, Time.deltaTime);
 
+        //Don't do anything if isMoving is false
         if (!isMoving)
             return;
 
@@ -293,8 +296,8 @@ public class EnemyScript : MonoBehaviour
         if(DamageCoroutine != null)
             StopCoroutine(DamageCoroutine);
 
-        if (StrafeCoroutine != null)
-            StopCoroutine(StrafeCoroutine);
+        if (MovementCoroutine != null)
+            StopCoroutine(MovementCoroutine);
     }
 
     #region Public Booleans
