@@ -36,4 +36,4 @@ You can see a running demo of the project in [this video](https://youtu.be/Od9w7
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License
