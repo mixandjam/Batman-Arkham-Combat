@@ -23,7 +23,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 After cloning or downloading the repository, open the root project folder in unity and press the Play button.
 
-You can see a running demo of the project in [this video](https://youtu.be/Od9w7OGxgg8).
+You can see a running demo of the project in [this video](https://youtu.be/GFOpKcpKGKQ).
 
 ## Built With
 
